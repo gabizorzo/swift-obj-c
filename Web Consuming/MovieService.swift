@@ -8,13 +8,20 @@
 import Foundation
 import UIKit
 
+// MARK: - Movie Service Delegate
+/* func refreshMovies() for reloading the views when there's a data update
+ */
 protocol MovieServiceDelegate {
     func refreshMovies()
 }
 
+// MARK: - Movie Service
+/* Class responsible for integrating the New code (Swift) with the Legacy code (Obj-C)
+ */
 class MovieService : NSObject, MovieAPIDelegate {
     var delegate: MovieServiceDelegate?
     
+    // MARK: - Movies array
     var movies : [FetchOption : [Movie]] = [
         FetchOption.nowPlaying : [],
         FetchOption.popular : []
@@ -24,6 +31,8 @@ class MovieService : NSObject, MovieAPIDelegate {
         }
     }
     
+    // MARK: - Movie API
+    /* From the Legacy code */
     private var movieAPI : MovieAPI
     
     override init() {
@@ -34,12 +43,22 @@ class MovieService : NSObject, MovieAPIDelegate {
         self.movieAPI.fetchMovieList(.nowPlaying)
     }
     
+    // MARK: - Details for Movie
+    /* Responsible for calling the MovieAPI Legacy code and getting the movie details.
+        Enter: Movie
+        Return: Void
+     */
     func detailsFor(movie: Movie) {
         if movie.genres.isEmpty {
             self.movieAPI.fetchMovieDetails(movie)
         }
     }
     
+    // MARK: - Received Movie List
+    /* From the MovieAPIDelegate
+     Enter: JSON, Movie
+     Return: Void (var movies has a did set that will call the delegate)
+     */
     internal func receivedMovieList(_ json: Data, from option: FetchOption) {
         let error = NSErrorPointer(nilLiteral: ())
         let movies = Parser.movieList(fromJSON: json, error: error)
@@ -55,6 +74,11 @@ class MovieService : NSObject, MovieAPIDelegate {
         }
     }
     
+    // MARK: - Received Movie Details
+    /* From the MovieAPIDelegate
+        Enter: JSON, Movie
+        Return: Void (delegate)
+     */
     internal func receivedMovieDetails(_ json: Data, for movie: Movie) {
         let error = NSErrorPointer(nilLiteral: ())
         Parser.details(for: movie, from: json, error: error)
@@ -67,14 +91,19 @@ class MovieService : NSObject, MovieAPIDelegate {
         }
     }
     
+    // MARK: - Fetched Failed with Error
+    /* From the MovieAPIDelegate */
     internal func fetchedFailedWithError(_ error: Error) {
         print("-XXX- FETCH FAILED")
         print(error.localizedDescription)
     }
     
+    // MARK: - Get Image
+    /* Responsible for getting the post image from the poster_path
+        Enter: URL
+        Return: Void (completionHandler @escaping(UIImage))
+     */
     func getImage(path: URL, completionHandler: @escaping (UIImage) -> Void) {
-//        let urlString = "https://image.tmdb.org/t/p/w200/\(path)"
-//        let url = URL(string: urlString)!
         var image:UIImage = UIImage(systemName: "clock")!
         URLSession.shared.dataTask(with: path) { (data, response, error) in
             image = UIImage(data: data!) ?? UIImage(systemName: "clock")!

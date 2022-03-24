@@ -4,8 +4,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Movie Service
     let movieService = MovieService()
     
+    // MARK: - View did load
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -14,10 +16,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         movieService.delegate = self
     }
     
+    // MARK: - Number of sections
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
 
+    // MARK: - Number of rows
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return min(movieService.movies[.popular]!.count,2)
@@ -27,6 +31,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return 0
     }
     
+    // MARK: - Title for header
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
             return "Popular Movies"
@@ -36,6 +41,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return ""
     }
     
+    // MARK: - View for header
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
                 var title: String = ""
 
@@ -61,6 +67,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 return header
             }
     
+    // MARK: - Cell for row at
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath) as! TableViewCell
@@ -106,6 +113,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    // MARK: - Did select row at
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0{
             performSegue(withIdentifier: "detailsNavigation", sender: movieService.movies[.popular]![indexPath.row])
@@ -123,6 +131,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 }
 
+// MARK: - Extension: Delegate
+/* func refreshMovies() from MovieServiceDelegate
+    Used to reload the table view once the movie list is updated from the API.
+ */
 extension ViewController: MovieServiceDelegate {
     func refreshMovies() {
         self.tableView.reloadData()

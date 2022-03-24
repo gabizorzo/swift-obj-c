@@ -4,10 +4,13 @@ class DetailsViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Movie Service
     let movieService = MovieService()
     
+    // MARK: - Movie
     var movie: Movie = Movie()
     
+    // MARK: - View did load
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -18,10 +21,12 @@ class DetailsViewController: UIViewController, UITableViewDelegate, UITableViewD
         movieService.detailsFor(movie: self.movie)
     }
     
+    // MARK: - Number of rows
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
     
+    // MARK: - Cell for row at
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "detailCell", for: indexPath) as! DetailsTableViewCell
         
@@ -45,6 +50,10 @@ class DetailsViewController: UIViewController, UITableViewDelegate, UITableViewD
 
 }
 
+// MARK: - Extension: Delegate
+/* func refreshMovies() from MovieServiceDelegate
+    Used to reload the table view once the movie details are updated from the API.
+ */
 extension DetailsViewController: MovieServiceDelegate {
     func refreshMovies() {
         self.tableView.reloadData()

@@ -14,10 +14,13 @@
 #define POPULAR_URL @"https://api.themoviedb.org/3/movie/popular?api_key=%@"
 #define GENRE_URL @"https://api.themoviedb.org/3/genre/movie/list?api_key=%@"
 #define DETAILS_URL @"https://api.themoviedb.org/3/movie/%@?api_key=%@"
-#define SEARCH_URL @"https://api.themoviedb.org/3/search/movie?api_key=%@&query=%@"
 
 @implementation MovieAPI
-
+// MARK: - Fetch Movie Details
+/* Responsible for getting the movie details from the API.
+    Enter: Movie
+    Returns: Void (delegate)
+ */
 -(void)fetchMovieDetails:(Movie *)movie {
     NSString *urlString = [NSString stringWithFormat:DETAILS_URL, movie.id, API_KEY];
     NSURL *url = [[NSURL alloc] initWithString:urlString];
@@ -39,6 +42,11 @@
     [task resume];
 }
 
+// MARK: - Fetch Movie List
+/* Responsible for getting the movie list from the API.
+    Enter: FetchOption (FetchPopular, FetchNowPlaying)
+    Returns: Void (delegate)
+ */
 -(void)fetchMovieList:(FetchOption)option {
     NSString *urlString;
     
@@ -65,29 +73,6 @@
         } else {
             NSLog(@"--V-- FETCH SUCESS");
             [self.delegate receivedMovieList:data from:option];
-        }
-    }];
-    [task resume];
-}
-
--(void)searchMoviesWith:(NSString *)keywords {
-    [[NSURLSession sharedSession] invalidateAndCancel];
-    
-    keywords = [keywords stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLPathAllowedCharacterSet];
-    NSString *urlString = [NSString stringWithFormat:SEARCH_URL, API_KEY, keywords];
-    NSURL *url = [[NSURL alloc] initWithString:urlString];
-    NSLog(@"%@", urlString);
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    NSURLSession *session =[NSURLSession sharedSession];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:
-                                  ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"--X-- SEARCH ERROR");
-            [self.delegate fetchedFailedWithError:error];
-        } else {
-            NSLog(@"--V-- SEARCH SUCCESS");
-            [self.delegate receivedMovieList:data from:FetchSearch];
         }
     }];
     [task resume];
